@@ -1,135 +1,156 @@
-import React, { useState } from 'react'
+import React, { createRef, useState } from 'react'
 
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
-import Table from 'react-bootstrap/Table'
+import InputGroup from 'react-bootstrap/InputGroup'
+import Row from 'react-bootstrap/Row'
 
-import { FaEdit, FaMinus, FaPlus, FaTimes } from 'react-icons/fa'
+import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa'
 
 export function NewDay (props) {
   const [exercises, updateExercises] = useState([])
 
-  return (
-    <Form>
-      <Table bordered>
-        <thead>
-          <tr>
-            <th>New Day</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <Form.Group>
-                <Form.Control type="text" placeholder="Day" required />
-              </Form.Group>
-            </td>
-          </tr>
-
-          {exercises.map((exercise, index) => 
-            <tr key={index}>
-              <td>{exercise}</td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
-      <Button block variant="outline-primary" onClick={() => updateExercises(addExercise(exercises))}>Add Exercise</Button>
-      <Button block variant="outline-danger">Cancel</Button>
-      <Button block>Save</Button>
-    </Form>
-  )
-}
-
-function Exercise (props) {
-  const [sets, updateSets] = useState([])
+  function addExercise () {
+    const newExercises = exercises.slice()
+    newExercises.push({})
+    updateExercises(newExercises)
+  }
 
   return (
     <React.Fragment>
-      <Table>
-        <tbody>
-          <tr>
-            <td>
-              <Form.Group>
-                <Form.Control type="text" placeholder="Exercise" />
-              </Form.Group>
-            </td>
-          </tr>
+      <Row>
+        <Col>
+          <h1>New Day</h1>
+        </Col>
+      </Row>
 
-          {sets.map((set, index) =>
-            <tr key={index}>
-              <td>
-                <Form.Row>{set}</Form.Row>
-              </td>
-            </tr>
-          )}
+      <Row>
+        <Col>
+          <Form.Group>
+            <Form.Control type="text" placeholder="Day" required />
+          </Form.Group>
+        </Col>
+      </Row>
 
-          <tr>
-            <td>
-              <Form.Row>
-                <Form.Group as={Col} xs="3" className="setCol">
-                  <Form.Control id="repsInput" className="setInput" type="number" step="1" placeholder="Reps" />
-                </Form.Group>
+      {exercises.map((e, i) =>
+        <Exercise key={i} name={e.name} />
+      )}
 
-                <Col xs="2">
-                  <Button block variant="outline-primary" disabled><FaTimes /></Button>
-                </Col>
+      <Row>
+        <Col>
+          <Form.Group>
+            <Button block variant="outline-primary" onClick={addExercise}>Add Exercise</Button>
+          </Form.Group>
+        </Col>
+      </Row>
 
-                <Form.Group as={Col} xs="3" className="setCol">
-                  <Form.Control id="weightInput" className="setInput" type="number" step="5" placeholder="Weight" />
-                </Form.Group>
-
-                <Col xs="2">
-                  <Button onClick={() => updateSets(addSet(sets))}><FaPlus /></Button>
-                </Col>
-              </Form.Row>
-            </td>
-          </tr>
-        </tbody>
-      </Table>
+      <Row>
+        <Col>
+          <Form.Group>
+            <Button block>Save</Button>
+          </Form.Group>
+        </Col>
+        <Col>
+          <Button block variant="outline-danger">Cancel</Button>
+        </Col>
+      </Row>
     </React.Fragment>
   )
 }
 
-function addExercise (exercises) {
-  const newExercises = exercises.slice()
-  newExercises.push(<Exercise key={newExercises.length} />)
-  return newExercises
+function Exercise (props) {
+  const [sets, updateSets] = useState([{ reps: 5, weight: 155 }])
+
+  const repsRef = createRef()
+  const weightRef = createRef()
+
+  function addSet () {
+    console.log(repsRef, weightRef)
+    const reps = parseInt(repsRef.current && repsRef.current.value)
+    const weight = parseInt(weightRef.current && weightRef.current.value)
+  
+    if (isNaN(reps) || isNaN(weight)) return
+  
+    const newSets = sets.slice()
+    newSets.push({ reps, weight })
+  
+    updateSets(newSets)
+  }
+  
+
+  return (
+    <React.Fragment>
+      <Row>
+        <Col>
+          <Form.Group>
+            <Form.Control type="text" placeholder="Exercise" defaultValue={props.name} />
+          </Form.Group>
+        </Col>
+        <Col xs="2">
+        <Form.Group>
+          <Button variant="danger"><FaTrash /></Button></Form.Group>
+        </Col>
+      </Row>
+
+      {sets.map((set, index) =>
+        <Row key={index}>
+          <Set reps={set.reps} weight={set.weight} />
+        </Row>
+      )}
+
+      <Row>
+        <Form.Group as={Col}>
+          <InputGroup xs="5">
+            <Form.Control ref={repsRef} className="setInput" type="number" step="1" />
+            <InputGroup.Append>
+              <InputGroup.Text>reps</InputGroup.Text>
+            </InputGroup.Append>
+        </InputGroup>
+        </Form.Group>
+
+        <Form.Group as={Col}>
+          <InputGroup xs="5">
+            <Form.Control ref={weightRef} className="setInput" type="number" step="5" />
+            <InputGroup.Append>
+              <InputGroup.Text>lbs</InputGroup.Text>
+            </InputGroup.Append>
+        </InputGroup>
+        </Form.Group>
+
+        <Col xs="2">
+          <Button className="addSetButton" variant="outline-primary" onClick={addSet}><FaPlus /></Button>
+        </Col>
+      </Row>
+    </React.Fragment>
+  )
 }
 
-function addSet (sets) {
-  const repsInput = document.getElementById('repsInput')
-  const weightInput = document.getElementById('weightInput')
-
-  const reps = parseInt(repsInput.value)
-  const weight = parseInt(weightInput.value)
-
-  if (isNaN(reps) || isNaN(weight)) return
-
-  const newSets = sets.slice()
-  newSets.push(
+function Set (props) {
+  return (
     <React.Fragment>
-      <Form.Group as={Col} xs="3">
-        <Form.Control className="setInput" type="number" value={reps} readOnly plaintext />
+      <Form.Group as={Col}>
+        <InputGroup xs="5">
+          <Form.Control className="setInput" type="number" defaultValue={props.reps} readOnly />
+          <InputGroup.Append>
+              <InputGroup.Text>reps</InputGroup.Text>
+            </InputGroup.Append>
+        </InputGroup>
       </Form.Group>
-
-      <Col xs="2">
-        <Button block variant="outline-primary" disabled><FaTimes /></Button>
-      </Col>
-
-      <Form.Group as={Col} xs="3">
-        <Form.Control className="setInput" type="number" value={weight} readOnly plaintext/>
+    
+      <Form.Group as={Col}>
+        <InputGroup xs="5">
+          <Form.Control className="setInput" type="number" defaultValue={props.weight} readOnly />
+          <InputGroup.Append>
+              <InputGroup.Text>lbs</InputGroup.Text>
+            </InputGroup.Append>
+        </InputGroup>
       </Form.Group>
 
       <Col xs="2">
         <Button><FaEdit /></Button>
       </Col>
-
-      <Col xs="2">
-        <Button><FaMinus /></Button>
-      </Col>
     </React.Fragment>
   )
-
-  return newSets
 }
+

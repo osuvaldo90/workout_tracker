@@ -2,6 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import Button from 'react-bootstrap/Button'
+import Col from 'react-bootstrap/Col'
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row'
 import Table from 'react-bootstrap/Table'
 
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
@@ -15,6 +18,7 @@ function DayTable (props) {
       <td>{exercise}</td>
     </tr>
   )
+
   return (
     <Table bordered>
       <thead>
@@ -35,17 +39,37 @@ function Routine (props) {
 
   return (
     <React.Fragment>
-      <DayTable
-        name="Leg Day"
-        exercises={legDayExercises}
-      />
-      <DayTable
-        name="Push Day"
-        exercises={pushDayExercises}
-      />
-      <Link to="/new-day">
-        <Button block>Add New Day</Button>
-      </Link>
+      <Row>
+        <Col>
+          <h1>Routine</h1>
+        </Col>
+      </Row>
+      
+      <Row>
+        <Col>
+          <DayTable
+            name="Leg Day"
+            exercises={legDayExercises}
+          />
+        </Col>
+      </Row>
+      
+      <Row>
+        <Col>
+          <DayTable
+            name="Push Day"
+            exercises={pushDayExercises}
+          />
+        </Col>
+      </Row>
+
+      <Row>
+        <Col>
+          <Link to="/new-day">
+            <Button block>Add New Day</Button>
+          </Link>
+        </Col>
+      </Row>
     </React.Fragment>
   )
 }
@@ -64,10 +88,14 @@ class App extends React.Component {
   render () {
     return (
       <main>
-        <Router>
-          <Route exact path="/" component={Routine} />
-          <Route path="/new-day" component={NewDay}/>
-        </Router>
+        <Container className="mainContainer">
+          <Col md="6">
+            <Router>
+              <Route exact path="/" component={Routine} />
+              <Route path="/new-day" component={NewDay}/>
+            </Router>
+          </Col>
+        </Container>
       </main>
     )
   }

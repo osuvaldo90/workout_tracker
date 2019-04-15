@@ -1,7 +1,12 @@
-main {
-  padding: 10px;  
+.mainContainer {
+  align-items: center;
+  justify-content: center;
 }
 
 .setInput {
   text-align: center;
+}
+
+.addSetButton {
+  align-self: flex-end;
 }
