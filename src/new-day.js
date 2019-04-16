@@ -10,6 +10,8 @@ import { FaMinus, FaPlus, FaTrash } from 'react-icons/fa'
 
 import { Link, Redirect } from 'react-router-dom'
 
+import { saveNewDay } from './data'
+
 export function NewDay (props) {
   const [exercises, updateExercises] = useState([])
   const [saved, updateSaved] = useState(false)
@@ -25,17 +27,13 @@ export function NewDay (props) {
     updateExercises(newExercises)
   }
 
-  function saveDay (event) {
+  async function save (event) {
     event.preventDefault()
 
-    const storedDays = localStorage.getItem('days')
-    const days = storedDays ? JSON.parse(storedDays) : []
     const name = nameInputRef.current.value
+    const saved = await saveNewDay({ name, exercises })
 
-    days.push({ name, exercises })
-    localStorage.setItem('days', JSON.stringify(days, null, 2))
-
-    updateSaved(true)
+    updateSaved(saved)
   }
 
   function updateExercise (index, exercise) {
@@ -46,7 +44,7 @@ export function NewDay (props) {
 
   return (
     <React.Fragment>
-      <Form onSubmit={saveDay}>
+      <Form onSubmit={save}>
         <Row>
           <Form.Group as={Col}>
             <Form.Control
