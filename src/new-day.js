@@ -6,94 +6,139 @@ import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
 import Row from 'react-bootstrap/Row'
 
-import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa'
+import { FaMinus, FaPlus, FaTrash } from 'react-icons/fa'
+
+import { Link, Redirect } from 'react-router-dom'
 
 export function NewDay (props) {
   const [exercises, updateExercises] = useState([])
+  const [saved, updateSaved] = useState(false)
+
+  const nameInputRef = createRef()
 
   function addExercise () {
     const newExercises = exercises.slice()
-    newExercises.push({})
+    newExercises.push({
+      name: null,
+      sets: []
+    })
+    updateExercises(newExercises)
+  }
+
+  function saveDay (event) {
+    event.preventDefault()
+
+    const storedDays = localStorage.getItem('days')
+    const days = storedDays ? JSON.parse(storedDays) : []
+    const name = nameInputRef.current.value
+
+    days.push({ name, exercises })
+    localStorage.setItem('days', JSON.stringify(days, null, 2))
+
+    updateSaved(true)
+  }
+
+  function updateExercise (index, exercise) {
+    const newExercises = exercises.slice()
+    newExercises[index] = exercise
     updateExercises(newExercises)
   }
 
   return (
     <React.Fragment>
-      <Row>
-        <Col>
-          <h1>New Day</h1>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col>
-          <Form.Group>
-            <Form.Control type="text" placeholder="Day" required />
+      <Form onSubmit={saveDay}>
+        <Row>
+          <Form.Group as={Col}>
+            <Form.Control
+              ref={nameInputRef}
+              size="lg"
+              name="name"
+              type="text"
+              placeholder="New Day"
+              required
+            />
           </Form.Group>
-        </Col>
-      </Row>
+        </Row>
 
-      {exercises.map((e, i) =>
-        <Exercise key={i} name={e.name} />
-      )}
+        {exercises.map((e, i) => {
+          return (
+            <Exercise
+            key={i}
+              name={e.name}
+              sets={e.sets}
+              updateExercise={updateExercise.bind(null, i)}
+              />
+          )
+        })}
 
-      <Row>
-        <Col>
-          <Form.Group>
+        <Row>
+          <Form.Group as={Col}>
             <Button block variant="outline-primary" onClick={addExercise}>Add Exercise</Button>
           </Form.Group>
-        </Col>
-      </Row>
+        </Row>
 
-      <Row>
-        <Col>
-          <Form.Group>
-            <Button block>Save</Button>
+        <Row>
+          <Form.Group as={Col}>
+            <Button block type="submit">Save</Button>
           </Form.Group>
-        </Col>
-        <Col>
-          <Button block variant="outline-danger">Cancel</Button>
-        </Col>
-      </Row>
+          <Col>
+            <Link to="/">
+              <Button block variant="outline-danger">Cancel</Button>
+            </Link>
+          </Col>
+        </Row>
+      </Form>
+
+      {saved && <Redirect to='/' />}
     </React.Fragment>
   )
 }
 
 function Exercise (props) {
-  const [sets, updateSets] = useState([{ reps: 5, weight: 155 }])
-
-  const repsRef = createRef()
-  const weightRef = createRef()
+  const repsInputRef = createRef()
+  const weightInputRef = createRef()
 
   function addSet () {
-    console.log(repsRef, weightRef)
-    const reps = parseInt(repsRef.current && repsRef.current.value)
-    const weight = parseInt(weightRef.current && weightRef.current.value)
-  
+    const reps = parseInt(repsInputRef.current && repsInputRef.current.value)
+    const weight = parseInt(weightInputRef.current && weightInputRef.current.value)
+
     if (isNaN(reps) || isNaN(weight)) return
-  
-    const newSets = sets.slice()
+
+    const newSets = props.sets.slice()
     newSets.push({ reps, weight })
-  
-    updateSets(newSets)
+
+    props.updateExercise({
+      name: props.name,
+      sets: newSets
+    })
   }
-  
+
+  function updateName (event) {
+    props.updateExercise({
+      name: event.target.value,
+      sets: props.sets
+    })
+  }
 
   return (
     <React.Fragment>
       <Row>
-        <Col>
-          <Form.Group>
-            <Form.Control type="text" placeholder="Exercise" defaultValue={props.name} />
-          </Form.Group>
-        </Col>
+        <Form.Group as={Col}>
+          <Form.Control 
+            type="text"
+            placeholder="Exercise"
+            defaultValue={props.name}
+            onChange={updateName}
+            required
+          />
+        </Form.Group>
         <Col xs="2">
         <Form.Group>
           <Button variant="danger"><FaTrash /></Button></Form.Group>
         </Col>
       </Row>
 
-      {sets.map((set, index) =>
+      {props.sets.map((set, index) =>
         <Row key={index}>
           <Set reps={set.reps} weight={set.weight} />
         </Row>
@@ -102,7 +147,7 @@ function Exercise (props) {
       <Row>
         <Form.Group as={Col}>
           <InputGroup xs="5">
-            <Form.Control ref={repsRef} className="setInput" type="number" step="1" />
+            <Form.Control ref={repsInputRef} className="setInput" type="number" step="1" />
             <InputGroup.Append>
               <InputGroup.Text>reps</InputGroup.Text>
             </InputGroup.Append>
@@ -111,7 +156,7 @@ function Exercise (props) {
 
         <Form.Group as={Col}>
           <InputGroup xs="5">
-            <Form.Control ref={weightRef} className="setInput" type="number" step="5" />
+            <Form.Control ref={weightInputRef} className="setInput" type="number" step="5" />
             <InputGroup.Append>
               <InputGroup.Text>lbs</InputGroup.Text>
             </InputGroup.Append>
@@ -148,7 +193,7 @@ function Set (props) {
       </Form.Group>
 
       <Col xs="2">
-        <Button><FaEdit /></Button>
+        <Button><FaMinus /></Button>
       </Col>
     </React.Fragment>
   )

@@ -9,7 +9,7 @@ import Table from 'react-bootstrap/Table'
 
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
-import {NewDay} from './new-day'
+import { NewDay } from './new-day'
 import './index.css'
 
 function DayTable (props) {
@@ -74,34 +74,22 @@ function Routine (props) {
   )
 }
 
-
-class App extends React.Component {
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      page: 'routine'
-    }
-  }
-
-
-  render () {
-    return (
-      <main>
-        <Container className="mainContainer">
-          <Col md="6">
-            <Router>
-              <Route exact path="/" component={Routine} />
-              <Route path="/new-day" component={NewDay}/>
-            </Router>
-          </Col>
-        </Container>
-      </main>
-    )
-  }
+function App () {
+  return (
+    <main>
+      <Container className="mainContainer">
+        <Col md="6">
+          <Router>
+            <Route exact path="/" component={Routine} />
+            <Route path="/new-day" component={NewDay}/>
+          </Router>
+        </Col>
+      </Container>
+    </main>
+  )
 }
 
 ReactDOM.render(
   <App />,
   document.getElementById('root')
-);
+)
