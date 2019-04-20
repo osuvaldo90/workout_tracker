@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
 import Row from 'react-bootstrap/Row'
 
-import { FaMinus, FaPlus, FaTrash } from 'react-icons/fa'
+import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa'
 
 import { Link, Redirect } from 'react-router-dom'
 
@@ -132,7 +132,7 @@ function Exercise (props) {
         </Form.Group>
         <Col xs="2">
         <Form.Group>
-          <Button variant="danger"><FaTrash /></Button></Form.Group>
+          <Button variant="danger"><FaTimes /></Button></Form.Group>
         </Col>
       </Row>
 

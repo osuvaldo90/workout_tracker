@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react'
 
 import Button from 'react-bootstrap/Button'
+import Card from 'react-bootstrap/Card'
 import Col from 'react-bootstrap/Col'
+import ListGroup from 'react-bootstrap/ListGroup'
 import Row from 'react-bootstrap/Row'
-import Table from 'react-bootstrap/Table'
+
+import { FaTrash } from 'react-icons/fa'
 
 import { Link } from "react-router-dom"
 
 import { getRoutine } from './data'
+import './routine.css'
 
 export function Routine (props) {
   const [routine, updateRoutine] = useState([])
@@ -52,22 +56,19 @@ export function Routine (props) {
 }
 
 function DayTable (props) {
-  const exerciseRows = props.exercises.map((exercise, index) => 
-    <tr key={index}>
-      <td>{exercise}</td>
-    </tr>
-  )
-
   return (
-    <Table bordered>
-      <thead>
-        <tr>
-          <th>{props.name}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {exerciseRows}
-      </tbody>
-    </Table>
+    <Card className="day">
+      <Card.Header>
+          <Row>
+             <Col><h4>{props.name}</h4></Col>
+             <Col xs="2">
+               <Button variant="danger"><FaTrash /></Button>
+             </Col>
+          </Row>
+      </Card.Header>
+      <ListGroup>
+        {props.exercises.map((e, i) => <ListGroup.Item key={i}>{e}</ListGroup.Item>)}
+      </ListGroup>
+    </Card>
   )
 }
