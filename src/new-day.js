@@ -10,6 +10,8 @@ import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa'
 
 import { Link, Redirect } from 'react-router-dom'
 
+import {generate as shortid} from 'shortid'
+
 import { saveNewDay } from './data'
 
 export function NewDay (props) {
@@ -21,6 +23,7 @@ export function NewDay (props) {
   function addExercise () {
     const newExercises = exercises.slice()
     newExercises.push({
+      id: shortid(),
       name: null,
       sets: []
     })
@@ -42,6 +45,12 @@ export function NewDay (props) {
     updateExercises(newExercises)
   }
 
+  function deleteExercise (index) {
+    const newExercises = exercises.slice()
+    newExercises.splice(index, 1)
+    updateExercises(newExercises)
+  }
+
   return (
     <React.Fragment>
       <Form onSubmit={save}>
@@ -58,13 +67,15 @@ export function NewDay (props) {
           </Form.Group>
         </Row>
 
-        {exercises.map((e, i) => {
+        {exercises.map((e, index) => {
           return (
             <Exercise
-            key={i}
+              key={e.id}
+              id={e.id}
               name={e.name}
               sets={e.sets}
-              updateExercise={updateExercise.bind(null, i)}
+              updateExercise={updateExercise.bind(null, index)}
+              deleteExercise={deleteExercise.bind(null, index)}
               />
           )
         })}
@@ -103,18 +114,30 @@ function Exercise (props) {
     if (isNaN(reps) || isNaN(weight)) return
 
     const newSets = props.sets.slice()
-    newSets.push({ reps, weight })
+    newSets.push({ id: shortid(), reps, weight })
 
     props.updateExercise({
-      name: props.name,
+      ...props,
+      sets: newSets
+    })
+  }
+
+  function deleteSet (index) {
+    const newSets = props.sets.slice()
+    newSets.splice(index, 1)
+
+    console.log('deleteSet', index, JSON.stringify(props.sets, null, 2), JSON.stringify(newSets, null, 2))
+
+    props.updateExercise({
+      ...props,
       sets: newSets
     })
   }
 
   function updateName (event) {
     props.updateExercise({
-      name: event.target.value,
-      sets: props.sets
+      ...props,
+      name: event.target.value
     })
   }
 
@@ -132,13 +155,17 @@ function Exercise (props) {
         </Form.Group>
         <Col xs="2">
         <Form.Group>
-          <Button variant="danger"><FaTimes /></Button></Form.Group>
+          <Button variant="danger" onClick={props.deleteExercise}><FaTimes /></Button></Form.Group>
         </Col>
       </Row>
 
       {props.sets.map((set, index) =>
-        <Row key={index}>
-          <Set reps={set.reps} weight={set.weight} />
+        <Row key={set.id}>
+          <Set
+            reps={set.reps}
+            weight={set.weight}
+            deleteSet={deleteSet.bind(null, index)}
+          />
         </Row>
       )}
 
@@ -191,7 +218,7 @@ function Set (props) {
       </Form.Group>
 
       <Col xs="2">
-        <Button><FaMinus /></Button>
+        <Button onClick={props.deleteSet}><FaMinus /></Button>
       </Col>
     </React.Fragment>
   )
