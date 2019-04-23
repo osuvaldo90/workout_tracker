@@ -1,15 +1,22 @@
+import { generate as shortid } from 'shortid'
+
 export async function getRoutine () {
   const storedRoutine = localStorage.getItem('routine')
   return storedRoutine ? JSON.parse(storedRoutine) : []
 }
 
-export function saveNewDay (newDay) {
-  const storedDays = localStorage.getItem('routine')
-  const days = storedDays ? JSON.parse(storedDays) : []
-  const id = days.length > 0 ? days[days.length - 1].id + 1 : 0
+export async function saveNewDay (newDay) {
+  const routine = await getRoutine()
+  const id = shortid()
 
-  days.push({...newDay, id })
-  localStorage.setItem('routine', JSON.stringify(days))
+  routine.push({...newDay, id })
+  localStorage.setItem('routine', JSON.stringify(routine))
 
   return true
+}
+
+export async function deleteDay (id) {
+  const routine = await getRoutine()
+  const newRoutine = routine.filter(d => d.id !== id)
+  localStorage.setItem('routine', JSON.stringify(newRoutine))
 }

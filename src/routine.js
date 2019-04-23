@@ -10,17 +10,13 @@ import { FaTrash } from 'react-icons/fa'
 
 import { Link } from "react-router-dom"
 
-import { getRoutine } from './data'
+import { getRoutine, deleteDay } from './data'
 import './routine.css'
 
 export function Routine (props) {
   const [routine, updateRoutine] = useState([])
   useEffect(() => {
     getAndUpdateRoutine()
-
-    return () => {
-
-    }
 
     async function getAndUpdateRoutine () {
       const routine = await getRoutine()
@@ -37,9 +33,17 @@ export function Routine (props) {
       </Row>
 
       {routine.map((day, index) =>
-        <Row key={index}>
+        <Row key={day.id}>
           <Col>
-            <DayTable name={day.name} exercises={day.exercises.map(e => e.name) }/>
+            <DayTable
+              name={day.name}
+              exercises={day.exercises.map(e => e.name)}
+              deleteDay={async () => {
+                await deleteDay(day.id)
+                const newRoutine = await getRoutine()
+                updateRoutine(newRoutine)
+              }}
+            />
           </Col>
         </Row>
       )}
@@ -62,7 +66,7 @@ function DayTable (props) {
           <Row>
              <Col><h4>{props.name}</h4></Col>
              <Col xs="2">
-               <Button variant="danger"><FaTrash /></Button>
+               <Button variant="danger" onClick={props.deleteDay}><FaTrash /></Button>
              </Col>
           </Row>
       </Card.Header>
