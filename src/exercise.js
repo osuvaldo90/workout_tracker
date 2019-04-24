@@ -1,4 +1,4 @@
-import React, { createRef, useState } from 'react'
+import React, { createRef } from 'react'
 
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
@@ -8,102 +8,9 @@ import Row from 'react-bootstrap/Row'
 
 import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa'
 
-import { Link, Redirect } from 'react-router-dom'
-
 import {generate as shortid} from 'shortid'
 
-import { saveNewDay } from './data'
-
-export function NewDay (props) {
-  const [exercises, updateExercises] = useState([])
-  const [saved, updateSaved] = useState(false)
-
-  const nameInputRef = createRef()
-
-  function addExercise () {
-    const newExercises = exercises.slice()
-    newExercises.push({
-      id: shortid(),
-      name: null,
-      sets: []
-    })
-    updateExercises(newExercises)
-  }
-
-  async function save (event) {
-    event.preventDefault()
-
-    const name = nameInputRef.current.value
-    const saved = await saveNewDay({ name, exercises })
-
-    updateSaved(saved)
-  }
-
-  function updateExercise (index, exercise) {
-    const newExercises = exercises.slice()
-    newExercises[index] = exercise
-    updateExercises(newExercises)
-  }
-
-  function deleteExercise (index) {
-    const newExercises = exercises.slice()
-    newExercises.splice(index, 1)
-    updateExercises(newExercises)
-  }
-
-  return (
-    <React.Fragment>
-      <Form onSubmit={save}>
-        <Row>
-          <Form.Group as={Col}>
-            <Form.Control
-              ref={nameInputRef}
-              size="lg"
-              name="name"
-              type="text"
-              placeholder="New Day"
-              required
-            />
-          </Form.Group>
-        </Row>
-
-        {exercises.map((e, index) => {
-          return (
-            <Exercise
-              key={e.id}
-              id={e.id}
-              name={e.name}
-              sets={e.sets}
-              updateExercise={updateExercise.bind(null, index)}
-              deleteExercise={deleteExercise.bind(null, index)}
-              />
-          )
-        })}
-
-        <Row>
-          <Form.Group as={Col}>
-            <Button block variant="outline-primary" onClick={addExercise}>Add Exercise</Button>
-          </Form.Group>
-        </Row>
-
-        <Row>
-          <Form.Group as={Col}>
-            <Button block type="submit">Save</Button>
-          </Form.Group>
-          <Col>
-            <Link to="/">
-              <Button block variant="outline-danger">Cancel</Button>
-            </Link>
-          </Col>
-        </Row>
-      </Form>
-
-      {saved && <Redirect to='/' />}
-    </React.Fragment>
-  )
-}
-
-function Exercise (props) {
+export function Exercise (props) {
   const repsInputRef = createRef()
   const weightInputRef = createRef()
 

@@ -20,3 +20,8 @@ export async function deleteDay (id) {
   const newRoutine = routine.filter(d => d.id !== id)
   localStorage.setItem('routine', JSON.stringify(newRoutine))
 }
+
+export async function getDay (id) {
+  const routine = await getRoutine()
+  return routine.find(d => d.id === id)
+}

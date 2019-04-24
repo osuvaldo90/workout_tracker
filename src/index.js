@@ -6,7 +6,7 @@ import Container from 'react-bootstrap/Container';
 
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
-import { NewDay } from './new-day'
+import { EditDay } from './edit-day'
 import { Routine } from './routine'
 import './index.css'
 
@@ -17,7 +17,8 @@ function App () {
         <Col md="6">
           <Router>
             <Route exact path="/" component={Routine} />
-            <Route path="/new-day" component={NewDay}/>
+            <Route path="/new-day" component={EditDay}/>
+            <Route path="/edit-day/:id" component={EditDay} />
           </Router>
         </Col>
       </Container>

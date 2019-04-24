@@ -6,7 +6,7 @@ import Col from 'react-bootstrap/Col'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Row from 'react-bootstrap/Row'
 
-import { FaTrash } from 'react-icons/fa'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 
 import { Link } from "react-router-dom"
 
@@ -15,14 +15,7 @@ import './routine.css'
 
 export function Routine (props) {
   const [routine, updateRoutine] = useState([])
-  useEffect(() => {
-    getAndUpdateRoutine()
-
-    async function getAndUpdateRoutine () {
-      const routine = await getRoutine()
-      updateRoutine(routine)
-    }
-  }, [])
+  useEffect(() => { getRoutine().then(updateRoutine) }, [])
 
   return (
     <React.Fragment>
@@ -36,6 +29,7 @@ export function Routine (props) {
         <Row key={day.id}>
           <Col>
             <DayTable
+              id={day.id}
               name={day.name}
               exercises={day.exercises.map(e => e.name)}
               deleteDay={async () => {
@@ -65,6 +59,11 @@ function DayTable (props) {
       <Card.Header>
           <Row>
              <Col><h4>{props.name}</h4></Col>
+             <Col xs="2">
+              <Link to={`/edit-day/${props.id}`}>
+                <Button variant="primary"><FaEdit /></Button>
+              </Link>
+             </Col>
              <Col xs="2">
                <Button variant="danger" onClick={props.deleteDay}><FaTrash /></Button>
              </Col>
