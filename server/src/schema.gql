@@ -1,0 +1,41 @@
+input SetInput {
+  reps: Int!
+  weight: Int!
+}
+
+input ExerciseInput {
+  name: String!
+  sets: [SetInput!]!
+}
+
+input NewDayInput {
+  name: String!
+  exercises: [ExerciseInput!]!
+}
+
+type Set {
+  reps: Int
+  weight: Int
+}
+
+type Exercise {
+  name: String
+  sets: [Set]
+}
+
+type Day {
+  name: String
+  exercises: [Exercise]
+}
+
+type NewDayPayload {
+  day: Day
+}
+
+type Query {
+  tmp: String
+}
+
+type Mutation {
+  saveNewDay(newDay: NewDayInput): NewDayPayload
+}
